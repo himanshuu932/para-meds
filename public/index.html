@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🦠 PARAMECIUM - Emergency Protocol</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --neon-green: #39ff14;
+            --neon-cyan: #00f7ff;
+            --neon-pink: #ff00ff;
+            --danger-red: #ff2d2d;
+            --warning-orange: #ff9500;
+            --dark-bg: #050508;
+            --panel-bg: rgba(10, 15, 25, 0.85);
+            --glass: rgba(255, 255, 255, 0.03);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            min-height: 100vh;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: -1;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(57, 255, 20, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 80% 20%, rgba(0, 247, 255, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 0, 255, 0.03) 0%, transparent 60%);
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.03;
+        }
+
+        /* Scan lines effect */
+        .scanlines {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 0, 0, 0.1) 2px,
+                    rgba(0, 0, 0, 0.1) 4px);
+            pointer-events: none;
+            z-index: 1000;
+            opacity: 0.3;
+        }
+
+        .main-container {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* LEFT PANEL */
+        .story-panel {
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            background: linear-gradient(135deg, rgba(10, 15, 25, 0.9) 0%, rgba(5, 10, 20, 0.95) 100%);
+            border-right: 1px solid rgba(57, 255, 20, 0.15);
+        }
+
+        /* Alert Bar */
+        .alert-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: linear-gradient(90deg, var(--danger-red), #cc0000, var(--danger-red));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 4px;
+            animation: alertPulse 2s ease-in-out infinite;
+            overflow: hidden;
+        }
+
+        .alert-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: alertSweep 3s linear infinite;
+        }
+
+        @keyframes alertPulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.85;
+            }
+        }
+
+        @keyframes alertSweep {
+            0% {
+                left: -100%;
+            }
+
+            100% {
+                left: 100%;
+            }
+        }
+
+        .alert-icon {
+            font-size: 1.2rem;
+            animation: blink 0.8s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.3;
+            }
+        }
+
+        /* Brand Header */
+        .brand-section {
+            margin-bottom: 40px;
+            margin-top: 30px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .brand-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--neon-green), var(--neon-cyan));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow:
+                0 0 30px rgba(57, 255, 20, 0.4),
+                inset 0 0 20px rgba(255, 255, 255, 0.1);
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+
+            0%,
+            100% {
+                box-shadow: 0 0 30px rgba(57, 255, 20, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1);
+            }
+
+            50% {
+                box-shadow: 0 0 50px rgba(57, 255, 20, 0.6), inset 0 0 30px rgba(255, 255, 255, 0.15);
+            }
+        }
+
+        .brand-text h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-green));
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientShift 4s linear infinite;
+        }
+
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .brand-text .tagline {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 8px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 5px;
+        }
+
+        /* Story Content */
+        .story-section {
+            margin-bottom: 35px;
+        }
+
+        .section-title {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--danger-red);
+            letter-spacing: 3px;
+            margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--danger-red), transparent);
+        }
+
+        .story-text {
+            font-size: 1.1rem;
+            font-weight: 400;
+            line-height: 1.9;
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .story-text strong {
+            color: var(--neon-green);
+            font-weight: 600;
+        }
+
+        .story-text .danger {
+            color: var(--danger-red);
+            font-weight: 600;
+        }
+
+        /* Status Cards */
+        .status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .status-card {
+            background: var(--glass);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            padding: 18px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s;
+        }
+
+        .status-card:hover {
+            border-color: rgba(57, 255, 20, 0.3);
+            background: rgba(57, 255, 20, 0.05);
+        }
+
+        .status-card .label {
+            font-size: 0.7rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .status-card .value {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+
+        .status-card .value.critical {
+            color: var(--danger-red);
+        }
+
+        .status-card .value.warning {
+            color: var(--warning-orange);
+        }
+
+        .status-card .value.ok {
+            color: var(--neon-green);
+        }
+
+        /* RIGHT PANEL */
+        .terminal-panel {
+            padding: 60px 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(180deg, rgba(5, 8, 15, 0.9) 0%, rgba(10, 15, 25, 0.95) 100%);
+        }
+
+        .terminal-container {
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .terminal-box {
+            background: linear-gradient(180deg, rgba(15, 25, 40, 0.9) 0%, rgba(10, 18, 30, 0.95) 100%);
+            border: 2px solid;
+            border-image: linear-gradient(180deg, var(--neon-green), var(--neon-cyan)) 1;
+            border-radius: 20px;
+            padding: 35px 30px;
+            position: relative;
+            overflow: hidden;
+            box-shadow:
+                0 0 60px rgba(57, 255, 20, 0.15),
+                0 25px 50px rgba(0, 0, 0, 0.5),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        }
+
+        .terminal-box::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--neon-green), var(--neon-cyan), var(--neon-pink), var(--neon-green));
+            background-size: 300% 100%;
+            animation: borderGlow 4s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 300% 50%;
+            }
+        }
+
+        .terminal-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .terminal-header .icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+
+        .terminal-header h2 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--neon-green);
+            text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+        }
+
+        .terminal-header .sub {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* Attempts Display */
+        .attempts-display {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 28px;
+        }
+
+        .attempts-label {
+            font-size: 0.75rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.5);
+            text-transform: uppercase;
+        }
+
+        .attempts-count {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            transition: all 0.3s;
+        }
+
+        .attempts-count.safe {
+            color: var(--neon-green);
+            text-shadow: 0 0 25px var(--neon-green);
+        }
+
+        .attempts-count.warning {
+            color: var(--warning-orange);
+            text-shadow: 0 0 25px var(--warning-orange);
+        }
+
+        .attempts-count.danger {
+            color: var(--danger-red);
+            text-shadow: 0 0 25px var(--danger-red);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-4px);
+            }
+
+            75% {
+                transform: translateX(4px);
+            }
+        }
+
+        /* Code Input */
+        .code-input {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+
+        .digit-box {
+            width: 60px;
+            height: 75px;
+            background: linear-gradient(180deg, rgba(20, 30, 50, 0.8) 0%, rgba(10, 15, 25, 0.9) 100%);
+            border: 2px solid var(--neon-green);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: var(--neon-green);
+            text-shadow: 0 0 15px var(--neon-green);
+            box-shadow:
+                0 0 20px rgba(57, 255, 20, 0.2),
+                inset 0 0 20px rgba(57, 255, 20, 0.05);
+            transition: all 0.2s;
+        }
+
+        .digit-box.filled {
+            background: linear-gradient(180deg, rgba(57, 255, 20, 0.1) 0%, rgba(30, 50, 40, 0.3) 100%);
+            transform: scale(1.02);
+        }
+
+        .digit-box.disabled {
+            opacity: 0.3;
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Numpad */
+        .numpad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .num-key {
+            height: 60px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: linear-gradient(180deg, rgba(40, 50, 70, 0.6) 0%, rgba(20, 30, 45, 0.8) 100%);
+            border: 1px solid rgba(57, 255, 20, 0.25);
+            border-radius: 10px;
+            color: var(--neon-green);
+            cursor: pointer;
+            transition: all 0.15s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .num-key::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(57, 255, 20, 0.2), transparent);
+            transition: left 0.3s;
+        }
+
+        .num-key:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .num-key:hover:not(:disabled) {
+            background: var(--neon-green);
+            color: #000;
+            box-shadow: 0 0 30px rgba(57, 255, 20, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .num-key:active:not(:disabled) {
+            transform: scale(0.95) translateY(0);
+        }
+
+        .num-key:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .num-key.zero {
+            grid-column: 2;
+        }
+
+        /* Action Buttons */
+        .actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .action-btn {
+            height: 55px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-clear {
+            background: linear-gradient(180deg, #ff4444, #cc0000);
+            color: white;
+        }
+
+        .btn-activate {
+            background: linear-gradient(180deg, var(--neon-green), #00aa44);
+            color: #000;
+        }
+
+        .action-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .action-btn:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Message */
+        .message-box {
+            margin-top: 25px;
+            padding: 18px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 500;
+            display: none;
+            animation: msgSlide 0.3s ease;
+        }
+
+        @keyframes msgSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message-box.active {
+            display: block;
+        }
+
+        .message-box.low {
+            background: rgba(0, 150, 255, 0.15);
+            border: 1px solid #0099ff;
+            color: #66d9ff;
+        }
+
+        .message-box.high {
+            background: rgba(255, 100, 0, 0.15);
+            border: 1px solid #ff6600;
+            color: #ffbb66;
+        }
+
+        .message-box.success {
+            background: rgba(57, 255, 20, 0.15);
+            border: 2px solid var(--neon-green);
+            color: var(--neon-green);
+        }
+
+        .message-box.error {
+            background: rgba(255, 0, 0, 0.15);
+            border: 1px solid var(--danger-red);
+            color: #ff6666;
+        }
+
+        .bug-found {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 2px dashed var(--neon-green);
+            border-radius: 10px;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.9rem;
+            word-break: break-all;
+        }
+
+        /* Lockout Overlay */
+        .lockout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(5, 5, 10, 0.98);
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            text-align: center;
+            padding: 30px;
+        }
+
+        .lockout.active {
+            display: flex;
+        }
+
+        .lockout-icon {
+            font-size: 6rem;
+            margin-bottom: 25px;
+        }
+
+        .lockout h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--danger-red);
+            letter-spacing: 5px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 30px var(--danger-red);
+        }
+
+        .lockout p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 1.1rem;
+            max-width: 450px;
+            line-height: 1.7;
+            margin-bottom: 40px;
+        }
+
+        .timer {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 5rem;
+            font-weight: 900;
+            color: var(--danger-red);
+            text-shadow: 0 0 50px var(--danger-red);
+            letter-spacing: 8px;
+        }
+
+        .timer-label {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 5px;
+            margin-top: 15px;
+            text-transform: uppercase;
+        }
+
+        .hint-text {
+            margin-top: 50px;
+            padding: 18px 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.35);
+        }
+
+        /* Responsive */
+        @media (max-width: 950px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+
+            .story-panel {
+                padding: 80px 30px 40px;
+                border-right: none;
+            }
+
+            .terminal-panel {
+                padding: 40px 25px 60px;
+            }
+
+            .status-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="scanlines"></div>
+
+    <div id="lockout" class="lockout">
+        <div class="lockout-icon">🔒</div>
+        <h1>LOCKOUT</h1>
+        <p>Security protocol activated due to excessive failed authentication attempts. System access temporarily
+            suspended.</p>
+        <div class="timer" id="timer">3:00</div>
+        <div class="timer-label">Cooldown Remaining</div>
+        <div class="hint-text">💡 This lockout persists in browser storage...</div>
+    </div>
+
+    <div class="main-container">
+        <div class="story-panel">
+            <div class="alert-bar">
+                <span class="alert-icon">⚠️</span>
+                <span>BIOHAZARD ALERT — CONTAINMENT BREACH DETECTED</span>
+                <span class="alert-icon">⚠️</span>
+            </div>
+
+            <div class="brand-section">
+                <div class="brand">
+                    <div class="brand-logo">🦠</div>
+                    <div class="brand-text">
+                        <h1>PARAMECIUM</h1>
+                        <div class="tagline">BIODEFENSE SYSTEMS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="story-section">
+                <div class="section-title">🚨 SITUATION REPORT</div>
+                <p class="story-text">
+                    A catastrophic containment failure at <strong>Paramecium BioLab Sector-7</strong>
+                    has released an experimental pathogen into the facility's air circulation system.
+                </p>
+                <p class="story-text" style="margin-top: 15px;">
+                    The <strong>Automated Antidote Dispenser</strong> can neutralize the outbreak,
+                    but requires a <span class="danger">4-digit authorization code</span> to activate.
+                    The system administrator is unreachable. Time is critical.
+                </p>
+            </div>
+
+            <div class="story-section">
+                <div class="section-title" style="color: var(--warning-orange);">⚠️ SECURITY VULNERABILITY</div>
+                <p class="story-text">
+                    Analysis of the dispenser's authentication system has revealed a critical flaw:
+                    <strong>No rate limiting</strong> was implemented on the login endpoint.
+                </p>
+                <p class="story-text" style="margin-top: 15px;">
+                    Additionally, the system <span class="danger">leaks information</span> by providing
+                    feedback on whether the entered code is too high or too low. This feedback, combined
+                    with the lack of proper throttling, makes the system vulnerable to attack.
+                </p>
+                <p class="story-text" style="margin-top: 15px;">
+                    You have <strong>12 attempts</strong> before the terminal locks for 3 minutes.
+                </p>
+            </div>
+
+            <div class="status-grid">
+                <div class="status-card">
+                    <div class="label">Threat Level</div>
+                    <div class="value critical">CRITICAL</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Sectors Exposed</div>
+                    <div class="value warning">7, 8, 12</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Antidote Status</div>
+                    <div class="value ok">READY</div>
+                </div>
+                <div class="status-card">
+                    <div class="label">Rate Limiter</div>
+                    <div class="value critical">MISSING</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="terminal-panel">
+            <div class="terminal-container">
+                <div class="terminal-box">
+                    <div class="terminal-header">
+                        <span class="icon">💉</span>
+                        <h2>ANTIDOTE SYSTEM</h2>
+                        <div class="sub">Enter 4-Digit Authorization Code</div>
+                    </div>
+
+                    <div class="attempts-display">
+                        <span class="attempts-label">Attempts Left</span>
+                        <span class="attempts-count safe" id="attempts">12</span>
+                    </div>
+
+                    <div class="code-input">
+                        <div class="digit-box" id="d1">_</div>
+                        <div class="digit-box" id="d2">_</div>
+                        <div class="digit-box" id="d3">_</div>
+                        <div class="digit-box" id="d4">_</div>
+                    </div>
+
+                    <div class="numpad">
+                        <button class="num-key" onclick="press('1')">1</button>
+                        <button class="num-key" onclick="press('2')">2</button>
+                        <button class="num-key" onclick="press('3')">3</button>
+                        <button class="num-key" onclick="press('4')">4</button>
+                        <button class="num-key" onclick="press('5')">5</button>
+                        <button class="num-key" onclick="press('6')">6</button>
+                        <button class="num-key" onclick="press('7')">7</button>
+                        <button class="num-key" onclick="press('8')">8</button>
+                        <button class="num-key" onclick="press('9')">9</button>
+                        <button class="num-key zero" onclick="press('0')">0</button>
+                    </div>
+
+                    <div class="actions">
+                        <button class="action-btn btn-clear" id="btnClear" onclick="clear_code()">CLEAR</button>
+                        <button class="action-btn btn-activate" id="btnActivate" onclick="submit()">ACTIVATE</button>
+                    </div>
+
+                    <div id="msg" class="message-box"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const MAX = 12, LOCKOUT_SEC = 180;
+        let code = '', left = MAX, locked = false;
+        let sid = localStorage.getItem('p_sid') || ('s_' + Date.now() + Math.random().toString(36).slice(2));
+        localStorage.setItem('p_sid', sid);
+
+        function init() {
+            const lockEnd = localStorage.getItem('p_lock');
+            if (lockEnd) {
+                const rem = Math.floor((+lockEnd - Date.now()) / 1000);
+                rem > 0 ? startLock(rem) : localStorage.removeItem('p_lock');
+            }
+            const saved = localStorage.getItem('p_left');
+            if (saved) { left = +saved; updateUI(); }
+        }
+
+        function press(d) { if (code.length < 4 && !locked) { code += d; updateUI(); } }
+        function clear_code() { code = ''; updateUI(); hideMsg(); }
+
+        function updateUI() {
+            for (let i = 1; i <= 4; i++) {
+                const el = document.getElementById('d' + i);
+                const c = code[i - 1] || '_';
+                el.textContent = c;
+                el.classList.toggle('filled', c !== '_');
+                el.classList.toggle('disabled', locked);
+            }
+            const a = document.getElementById('attempts');
+            a.textContent = left;
+            a.className = 'attempts-count ' + (left <= 3 ? 'danger' : left <= 6 ? 'warning' : 'safe');
+        }
+
+        function disable(d) {
+            locked = d;
+            document.querySelectorAll('.num-key').forEach(k => k.disabled = d);
+            document.getElementById('btnClear').disabled = d;
+            document.getElementById('btnActivate').disabled = d;
+            updateUI();
+        }
+
+        function startLock(sec) {
+            disable(true);
+            document.getElementById('lockout').classList.add('active');
+            const end = Date.now() + sec * 1000;
+            localStorage.setItem('p_lock', end);
+
+            const t = setInterval(() => {
+                const r = Math.floor((end - Date.now()) / 1000);
+                if (r <= 0) {
+                    clearInterval(t);
+                    localStorage.removeItem('p_lock');
+                    localStorage.removeItem('p_left');
+                    sid = 's_' + Date.now() + Math.random().toString(36).slice(2);
+                    localStorage.setItem('p_sid', sid);
+                    left = MAX;
+                    document.getElementById('lockout').classList.remove('active');
+                    disable(false);
+                    code = '';
+                    updateUI();
+                    hideMsg();
+                    return;
+                }
+                document.getElementById('timer').textContent = Math.floor(r / 60) + ':' + (r % 60).toString().padStart(2, '0');
+            }, 1000);
+        }
+
+        async function submit() {
+            if (code.length !== 4 || locked) return;
+            try {
+                const res = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pin: code, sessionId: sid })
+                });
+                const d = await res.json();
+                left = d.attemptsLeft;
+                localStorage.setItem('p_left', left);
+                updateUI();
+
+                if (d.success) {
+                    showMsg(d.message, 'success', d.bugFound);
+                    disable(true);
+                    localStorage.clear();
+                } else if (d.locked) {
+                    startLock(LOCKOUT_SEC);
+                } else {
+                    showMsg(d.message, d.hint.includes('HIGH') ? 'high' : 'low');
+                    code = '';
+                    updateUI();
+                }
+            } catch (e) { showMsg('Connection error', 'error'); }
+        }
+
+        function showMsg(t, type, bug) {
+            const el = document.getElementById('msg');
+            el.className = 'message-box active ' + type;
+            el.innerHTML = bug ? t + '<div class="bug-found">🐛 ' + bug + '</div>' : t;
+        }
+
+        function hideMsg() { document.getElementById('msg').className = 'message-box'; }
+
+        // Keyboard support
+        document.addEventListener('keydown', function (e) {
+            if (locked) return;
+
+            // Number keys 0-9
+            if (e.key >= '0' && e.key <= '9') {
+                press(e.key);
+                e.preventDefault();
+            }
+            // Backspace - remove last digit
+            else if (e.key === 'Backspace') {
+                code = code.slice(0, -1);
+                updateUI();
+                e.preventDefault();
+            }
+            // Enter - submit
+            else if (e.key === 'Enter') {
+                submit();
+                e.preventDefault();
+            }
+            // Escape - clear
+            else if (e.key === 'Escape') {
+                clear_code();
+                e.preventDefault();
+            }
+        });
+
+        init();
+        updateUI();
+    </script>
+</body>
+
+</html>
