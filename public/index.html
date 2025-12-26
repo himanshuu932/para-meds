@@ -958,6 +958,28 @@
 
                 if (d.success) {
                     showMsg(d.message, 'success', d.bugFound);
+
+                    // Redirect after 3 seconds if redirect URL is present
+                    if (d.redirect) {
+                        const msgEl = document.getElementById('msg');
+                        if (msgEl) {
+                            msgEl.innerHTML += `<div style="margin-top: 15px; color: var(--neon-cyan);">🔄 Redirecting to dashboard in <span id="countdown">3</span> seconds...</div>`;
+                        }
+
+                        let seconds = 3;
+                        const countdownInterval = setInterval(() => {
+                            seconds--;
+                            const countdownEl = document.getElementById('countdown');
+                            if (countdownEl) {
+                                countdownEl.textContent = seconds;
+                            }
+                            if (seconds <= 0) {
+                                clearInterval(countdownInterval);
+                                window.location.href = d.redirect;
+                            }
+                        }, 1000);
+                    }
+
                     disable(true);
                     // Keep teamcode but clear game state
                     localStorage.removeItem('p_lock');

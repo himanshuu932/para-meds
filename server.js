@@ -90,6 +90,7 @@ app.post('/api/login', async (req, res) => {
             attemptsLeft: attemptsLeft,
             message: "✅ PASSCODE ACCEPTED! Antidote sequence initiated.",
             bugFound: "BUG_FOUND{authentication_bypass_via_feedback_leak}",
+            redirect: "https://bug-hunt-manager-tau.vercel.app/dashboard",
             backendSync: syncResult
         });
     } else if (attemptsLeft <= 0) {
