@@ -4,6 +4,8 @@ require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const QUESTION_ID = process.env.QUESTION_ID || 'level2_brute_force';
+const MAIN_BACKEND_URL = 'https://buggit-backend-yy8i.onrender.com/api/store-result';
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
@@ -13,6 +15,24 @@ const SECRET_PIN = process.env.SECRET_PIN || '7392';
 const MAX_ATTEMPTS = 12;
 
 const sessions = {};
+
+// Helper function to send result to main backend (backend-to-backend)
+async function sendToMainBackend(teamcode, questionId) {
+    try {
+        const response = await fetch(MAIN_BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ teamcode, questionId })
+        });
+
+        const result = await response.json();
+        console.log("[BACKEND-SYNC] Stored in Main Backend:", result);
+        return { success: true, result };
+    } catch (error) {
+        console.error("[BACKEND-SYNC] Error contacting main backend:", error.message);
+        return { success: false, error: error.message };
+    }
+}
 
 setInterval(() => {
     const now = Date.now();
@@ -35,8 +55,8 @@ function getSession(sessionId) {
     return sessions[sessionId];
 }
 
-app.post('/api/login', (req, res) => {
-    const { pin, sessionId } = req.body;
+app.post('/api/login', async (req, res) => {
+    const { pin, sessionId, teamcode } = req.body;
 
     if (!sessionId) {
         return res.status(400).json({ error: 'Session ID required' });
@@ -60,11 +80,17 @@ app.post('/api/login', (req, res) => {
     const secretNum = parseInt(SECRET_PIN);
 
     if (pin === SECRET_PIN) {
+        // Backend-to-backend call to main server
+        const y = teamcode || '382045158047';
+        const syncResult = await sendToMainBackend(y, QUESTION_ID);
+        console.log("Sync result:", syncResult);
+
         res.json({
             success: true,
             attemptsLeft: attemptsLeft,
             message: "✅ PASSCODE ACCEPTED! Antidote sequence initiated.",
-            bugFound: "BUG_FOUND{authentication_bypass_via_feedback_leak}"
+            bugFound: "BUG_FOUND{authentication_bypass_via_feedback_leak}",
+            backendSync: syncResult
         });
     } else if (attemptsLeft <= 0) {
         session.locked = true;
@@ -106,12 +132,13 @@ app.get('/ping', (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Paramecium Ops Challenge running on port ${PORT}`);
-    console.log(`Multi-user support: ENABLED (stateless design)`);
+    console.log(`Paramecium Level 2 running on port ${PORT}`);
+    console.log(`Question ID: ${QUESTION_ID}`);
+    console.log(`Main Backend: ${MAIN_BACKEND_URL}`);
     console.log(`Ping endpoint: /ping`);
 
     // Self-ping every 10 minutes to keep Render alive
-    const PING_INTERVAL = 10 * 60 * 1000; // 10 minutes
+    const PING_INTERVAL = 10 * 60 * 1000;
     setInterval(() => {
         const url = process.env.RENDER_EXTERNAL_URL || `http://localhost:${PORT}`;
         fetch(`${url}/ping`)

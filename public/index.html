@@ -944,11 +944,12 @@
 
         async function submit() {
             if (code.length !== 4 || locked) return;
+            const teamcode = localStorage.getItem('teamcode') || '382045158047';
             try {
                 const res = await fetch('/api/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ pin: code, sessionId: sid })
+                    body: JSON.stringify({ pin: code, sessionId: sid, teamcode })
                 });
                 const d = await res.json();
                 left = d.attemptsLeft;
@@ -958,7 +959,10 @@
                 if (d.success) {
                     showMsg(d.message, 'success', d.bugFound);
                     disable(true);
-                    localStorage.clear();
+                    // Keep teamcode but clear game state
+                    localStorage.removeItem('p_lock');
+                    localStorage.removeItem('p_left');
+                    localStorage.removeItem('p_sid');
                 } else if (d.locked) {
                     startLock(LOCKOUT_SEC);
                 } else {
@@ -976,6 +980,19 @@
         }
 
         function hideMsg() { document.getElementById('msg').className = 'message-box'; }
+
+        // Handle teamcode from URL params
+        document.addEventListener("DOMContentLoaded", () => {
+            const params = new URLSearchParams(window.location.search);
+            const teamcode = params.get("teamcode");
+            if (teamcode) {
+                localStorage.setItem("teamcode", teamcode);
+                params.delete("teamcode");
+                const cleanURL = window.location.pathname + (params.toString() ? "?" + params.toString() : "");
+                window.history.replaceState({}, document.title, cleanURL);
+                console.log("Teamcode saved:", teamcode);
+            }
+        });
 
         // Keyboard support
         document.addEventListener('keydown', function (e) {
